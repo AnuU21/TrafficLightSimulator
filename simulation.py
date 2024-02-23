@@ -4,34 +4,35 @@ import threading
 import pygame
 import sys
 
-# Default values of signal timers
-defaultGreen = {0:10, 1:10, 2:10, 3:10}
-defaultRed = 150
-defaultYellow = 5
+# Setting default values for lights in seconds
+defaultGreen = {0:10, 1:10, 2:10, 3:10} # light 0, 1, 2, and 3 are set for green for 10 seconds
+defaultYellow = 3 # yellow light is set for 5 seconds
+defaultRed = 42 # red light is set for 42 seconds (3 + (3 * (10+3))) 
+ 
 
 signals = []
-noOfSignals = 4
-currentGreen = 0   # Indicates which signal is green currently
-nextGreen = (currentGreen+1)%noOfSignals    # Indicates which signal will turn green next
-currentYellow = 0   # Indicates whether yellow signal is on or off 
+noOfLights = 4 # there are a total of 4 traffic (non-pedestrian) lights
+currentGreen = 0 # stores what traffic light is currently green
+nextGreen = (currentGreen+1)%noOfLights # stores the traffic light that will turn green next
+currentYellow = 0 # stores which light is currently yellow 
 
-speeds = {'car':2.25, 'bus':1.8, 'truck':1.8, 'bike':2.5}  # average speeds of vehicles
+speeds = {'car':2.25, 'bus':1.8, 'truck':1.8, 'bike':2.5} # speeds of vehicles
 
-# Coordinates of vehicles' start
-x = {'right':[0,0,0], 'down':[755,727,697], 'left':[1400,1400,1400], 'up':[602,627,657]}    
-y = {'right':[348,370,398], 'down':[0,0,0], 'left':[498,466,436], 'up':[800,800,800]}
+# Starting coordinates for a vehicle
+x = {'right':[0,0,0], 'down':[660, 660, 660], 'left':[1000,1000,950], 'up':[700,700,700]}    
+y = {'right':[498,466,436], 'down':[800,800,800], 'left':[348,370,398], 'up':[0,0,0]}
 
 vehicles = {'right': {0:[], 1:[], 2:[], 'crossed':0}, 'down': {0:[], 1:[], 2:[], 'crossed':0}, 'left': {0:[], 1:[], 2:[], 'crossed':0}, 'up': {0:[], 1:[], 2:[], 'crossed':0}}
 vehicleTypes = {0:'car', 1:'bus', 2:'truck', 3:'bike'}
 directionNumbers = {0:'right', 1:'down', 2:'left', 3:'up'}
 
-# Coordinates of signal image, timer, and vehicle count
+# Coordinates for signal image, timer, and vehicle count
 signalCoods = [(530,230),(810,230),(810,570),(530,570)]
 signalTimerCoods = [(530,210),(810,210),(810,550),(530,550)]
 
-# Coordinates of stop lines
-stopLines = {'right': 590, 'down': 330, 'left': 800, 'up': 535}
-defaultStop = {'right': 580, 'down': 320, 'left': 810, 'up': 545}
+# Coordinates for stop lines
+stopLines = {'right': 600, 'down': 500, 'left': 800, 'up': 500}
+defaultStop = {'right': 810, 'down': 545, 'left': 580, 'up': 320}
 # stops = {'right': [580,580,580], 'down': [320,320,320], 'left': [810,810,810], 'up': [545,545,545]}
 
 # Gap between vehicles
@@ -39,7 +40,7 @@ stoppingGap = 15    # stopping gap
 movingGap = 15   # moving gap
 
 pygame.init()
-simulation = pygame.sprite.Group()
+simulation = pygame.sprite.Group() 
 
 class TrafficSignal:
     def __init__(self, red, yellow, green):
@@ -139,24 +140,24 @@ def repeat():
     for i in range(0,3):
         for vehicle in vehicles[directionNumbers[currentGreen]][i]:
             vehicle.stop = defaultStop[directionNumbers[currentGreen]]
-    while(signals[currentGreen].yellow>0):  # while the timer of current yellow signal is not zero
+    while(signals[currentGreen].yellow != 0):  # while the timer of current yellow signal is not zero
         updateValues()
         time.sleep(1)
-    currentYellow = 0   # set yellow signal off
+    currentYellow = 0   # sets yellow signal off
     
-     # reset all signal times of current signal to default times
+     # resets all signal times of current signal to default times
     signals[currentGreen].green = defaultGreen[currentGreen]
     signals[currentGreen].yellow = defaultYellow
     signals[currentGreen].red = defaultRed
        
-    currentGreen = nextGreen # set next signal as green signal
-    nextGreen = (currentGreen+1)%noOfSignals    # set next green signal
+    currentGreen = nextGreen # sets next signal as green signal
+    nextGreen = (currentGreen+1)%noOfLights    # sets next green signal
     signals[nextGreen].red = signals[currentGreen].yellow+signals[currentGreen].green    # set the red time of next to next signal as (yellow time + green time) of next signal
     repeat()  
 
 # Update values of the signal timers after every second
 def updateValues():
-    for i in range(0, noOfSignals):
+    for i in range(0, noOfLights):
         if(i==currentGreen):
             if(currentYellow==0):
                 signals[i].green-=1
@@ -165,7 +166,7 @@ def updateValues():
         else:
             signals[i].red-=1
 
-# Generating vehicles in the simulation
+# Generates vehicles in the simulation
 def generateVehicles():
     while(True):
         vehicle_type = random.randint(0,3)
@@ -189,22 +190,22 @@ class Main:
     thread1.daemon = True
     thread1.start()
 
-    # Colours 
+    # Colors 
     black = (0, 0, 0)
     white = (255, 255, 255)
 
     # Screensize 
-    screenWidth = 1400
-    screenHeight = 800
+    screenWidth = 1000
+    screenHeight = 1000
     screenSize = (screenWidth, screenHeight)
 
-    # Setting background image i.e. image of intersection
+    # Sets image of intersection as background image
     background = pygame.image.load('images/intersection.png')
 
     screen = pygame.display.set_mode(screenSize)
     pygame.display.set_caption("SIMULATION")
 
-    # Loading signal images and font
+    # Loads signal images and font
     redSignal = pygame.image.load('images/signals/red.png')
     yellowSignal = pygame.image.load('images/signals/yellow.png')
     greenSignal = pygame.image.load('images/signals/green.png')
@@ -219,8 +220,8 @@ class Main:
             if event.type == pygame.QUIT:
                 sys.exit()
 
-        screen.blit(background,(0,0))   # display background in simulation
-        for i in range(0,noOfSignals):  # display signal and set timer according to current status: green, yello, or red
+        screen.blit(background,(0,0))   # displays background
+        for i in range(0,noOfLights):  # display signal and set timer according to current signal status: green, yellow, or red
             if(i==currentGreen):
                 if(currentYellow==1):
                     signals[i].signalText = signals[i].yellow
@@ -236,12 +237,13 @@ class Main:
                 screen.blit(redSignal, signalCoods[i])
         signalTexts = ["","","",""]
 
-        # display signal timer
-        for i in range(0,noOfSignals):  
+        #can comment out this function once there are no bugs in simulation
+        # displays signal timer
+        for i in range(0,noOfLights):  
             signalTexts[i] = font.render(str(signals[i].signalText), True, white, black)
             screen.blit(signalTexts[i],signalTimerCoods[i])
 
-        # display the vehicles
+        # displays the vehicles
         for vehicle in simulation:  
             screen.blit(vehicle.image, [vehicle.x, vehicle.y])
             vehicle.move()
