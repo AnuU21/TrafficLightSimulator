@@ -198,17 +198,26 @@ class Main:
     screenWidth = 1000
     screenHeight = 1000
     screenSize = (screenWidth, screenHeight)
-
+    
     # Sets image of intersection as background image
-    background = pygame.image.load('images/intersection.png')
+    background = pygame.image.load('images/intersection.jpg')
+
+    #Resizes intersection image
+    picture = pygame.transform.scale(background, (800,800))
 
     screen = pygame.display.set_mode(screenSize)
-    pygame.display.set_caption("SIMULATION")
+    pygame.display.set_caption("Traffic Light Simulator")
 
     # Loads signal images and font
-    redSignal = pygame.image.load('images/signals/red.png')
-    yellowSignal = pygame.image.load('images/signals/yellow.png')
-    greenSignal = pygame.image.load('images/signals/green.png')
+    setRedSignal = pygame.image.load('images/signals/red.png')
+    redSignal = pygame.transform.scale(setRedSignal, (100,100))
+    setYellowSignal = pygame.image.load('images/signals/yellow.png')
+    yellowSignal = pygame.transform.scale(setYellowSignal, (100,100))
+
+    #*********************************************************************************************************
+    setGreenSignal = pygame.image.load('images/signals/green-straight.png')
+    greenSignal = pygame.transform.scale(setGreenSignal, (100,100))
+    
     font = pygame.font.Font(None, 30)
 
     thread2 = threading.Thread(name="generateVehicles",target=generateVehicles, args=())    # Generating vehicles
@@ -220,7 +229,7 @@ class Main:
             if event.type == pygame.QUIT:
                 sys.exit()
 
-        screen.blit(background,(0,0))   # displays background
+        screen.blit(picture,(0,0))   # displays background
         for i in range(0,noOfLights):  # display signal and set timer according to current signal status: green, yellow, or red
             if(i==currentGreen):
                 if(currentYellow==1):
