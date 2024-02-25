@@ -30,7 +30,7 @@ class Vehicle(pygame.sprite.Sprite):
         
 
 
-        self.image = pygame.image.load("images/up/car.png")
+        self.image = pygame.image.load("images/car.png")
 
         
         self.rect = self.image.get_rect()
