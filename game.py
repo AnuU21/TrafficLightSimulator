@@ -77,13 +77,13 @@ def find_next_vehicle_in_path(vehicle, all_vehicles):
 
         # Check if the other vehicle is in the same direction of movement
         if vehicle.direction == other_vehicle.direction:
-            if vehicle.direction == Direction.NORTH and vehicle.y < other_vehicle.y and other_vehicle.y - vehicle.y < safety_distance:
+            if (vehicle.direction == Direction.NORTH) and (vehicle.y > other_vehicle.y) and ((vehicle.y - other_vehicle.y) < safety_distance):
                 return other_vehicle
-            elif vehicle.direction == Direction.SOUTH and vehicle.y > other_vehicle.y and vehicle.y - other_vehicle.y < safety_distance:
+            elif (vehicle.direction == Direction.SOUTH) and (vehicle.y < other_vehicle.y) and ((other_vehicle.y - vehicle.y) < safety_distance):
                 return other_vehicle
-            elif vehicle.direction == Direction.EAST and vehicle.x < other_vehicle.x and other_vehicle.x - vehicle.x < safety_distance:
+            elif (vehicle.direction == Direction.EAST) and (vehicle.x < other_vehicle.x) and ((other_vehicle.x - vehicle.x) < safety_distance):
                 return other_vehicle
-            elif vehicle.direction == Direction.WEST and vehicle.x > other_vehicle.x and vehicle.x - other_vehicle.x < safety_distance:
+            elif (vehicle.direction == Direction.WEST) and (vehicle.x > other_vehicle.x) and ((vehicle.x - other_vehicle.x) < safety_distance):
                 return other_vehicle
     return None  # If no vehicle is found in the path, return None
 
