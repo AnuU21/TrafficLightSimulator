@@ -83,7 +83,7 @@ class Vehicle(pygame.sprite.Sprite):
     def is_close_to(self, next_vehicle):
         # Define safety distances for horizontal and vertical lanes
         horizontal_safety_distance = 60
-        vertical_safety_distance = 100
+        vertical_safety_distance = 85
 
         # Check if both vehicles are in the same lane and direction
         if self.direction == next_vehicle.direction:
@@ -136,9 +136,10 @@ class Vehicle(pygame.sprite.Sprite):
             (Direction.NORTH, Direction.EAST, SignalColor.LEFT): lambda: self.move_and_reach(Direction.EAST),
             (Direction.NORTH, Direction.WEST, SignalColor.RIGHT): lambda: self.move_and_reach(Direction.WEST),
             (Direction.WEST, Direction.EAST, SignalColor.STRAIGHT): lambda: self.go_straight(Direction.EAST),
-            (Direction.WEST, Direction.NORTH, SignalColor.LEFT): lambda: self.move_and_reach(Direction.NORTH),
-            (Direction.WEST, Direction.SOUTH, SignalColor.RIGHT): lambda: self.move_and_reach(Direction.SOUTH),
+            (Direction.WEST, Direction.NORTH, SignalColor.RIGHT): lambda: self.move_and_reach(Direction.NORTH),
+            (Direction.WEST, Direction.SOUTH, SignalColor.LEFT): lambda: self.move_and_reach(Direction.SOUTH),
         }
+    
     
     def move_and_reach(self, direction):
         self.move_in_direction(direction)
