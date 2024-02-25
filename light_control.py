@@ -25,6 +25,7 @@ horizontal pedestrian lanes: stop
 """
 
 import time
+import pygame
 from enum import Enum
 
 yellowDuration = 3
@@ -36,12 +37,34 @@ class SignalColor(Enum):
 	RIGHT = 4
 	LEFT = 5
 
-class TrafficSignal:
+class TrafficSignal(pygame.sprite.Sprite):
 	def __init__(self, signal: SignalColor):
+		self.ts_straight = pygame.transform.scale_by(pygame.image.load('images/signals/green-straight.png'), 0.075)
+		self.ts_right = pygame.transform.scale_by(pygame.image.load('images/signals/green-right.png'), 0.075)
+		self.ts_left = pygame.transform.scale_by(pygame.image.load('images/signals/green-left.png'), 0.075)
+		self.ts_yellow = pygame.transform.scale_by(pygame.image.load('images/signals/yellow.png'), 0.075)
+		self.ts_red = pygame.transform.scale_by(pygame.image.load('images/signals/red.png'), 0.075)
+
+		pygame.sprite.Sprite.__init__(self)
 		self.currentSignal = signal
+		self.image = None
+		self.update_picture()
 
 	def switch_signal(self, newSignal):
 		self.currentSignal = newSignal
+		self.update_picture()
+
+	def update_picture(self):
+		if (self.currentSignal == SignalColor.STRAIGHT):
+			self.image = self.ts_straight
+		elif (self.currentSignal == SignalColor.LEFT):
+			self.image = self.ts_left
+		elif (self.currentSignal == SignalColor.RIGHT):
+			self.image = self.ts_right
+		elif (self.currentSignal == SignalColor.YELLOW):
+			self.image = self.ts_yellow
+		elif (self.currentSignal == SignalColor.RED):
+			self.image = self.ts_red
 
 	def get_signal(self):
 		return self.currentSignal
@@ -110,5 +133,5 @@ while True:
 	new_state = current_state % 4 + 1
 
 	time.sleep(switch_interval)
-	controller.switch_state(new_state)s
+	controller.switch_state(new_state)
 """
