@@ -55,42 +55,47 @@ class Vehicle(pygame.sprite.Sprite):
         elif direction == Direction.WEST:
             self.x -= 2
         
-    def turn(self, destination: Direction):
-        if destination == Direction.NORTH:
+    def turn(self, direction: Direction):
+        if direction == Direction.NORTH:
             self.image = pygame.transform.rotate(self.original_image, 0)
-            self.go_straight(destination)
-        elif destination == Direction.SOUTH:
+            self.rect = self.image.get_rect(center=self.rect.center)
+            self.go_straight(direction)
+        elif direction == Direction.SOUTH:
 
             self.image = pygame.transform.rotate(self.original_image, 180)
-            self.go_straight(destination)
-        elif destination == Direction.EAST:
+            self.rect = self.image.get_rect(center=self.rect.center)
+            self.go_straight(direction)
+        elif direction == Direction.EAST:
          
             self.image = pygame.transform.rotate(self.original_image, 270)
-            self.go_straight(destination)
-        elif destination == Direction.WEST:
+            self.rect = self.image.get_rect(center=self.rect.center)
+            self.go_straight(direction)
+        elif direction == Direction.WEST:
          
             self.image = pygame.transform.rotate(self.original_image, 90)
-            self.go_straight(destination)
+            self.rect = self.image.get_rect(center=self.rect.center)
+            self.go_straight(direction)
         
 
         self.rect = self.image.get_rect(center=self.rect.center)
-        self.direction = destination
+        self.direction = direction
     
     def is_close_to(self, next_vehicle):
         # Define safety distances for horizontal and vertical lanes
         horizontal_safety_distance = 60
-        vertical_safety_distance = 60  # Adjust this value if needed based on the game scale and vehicle velocities
+        vertical_safety_distance = 100
 
         # Check if both vehicles are in the same lane and direction
         if self.direction == next_vehicle.direction:
             dx = abs(next_vehicle.x - self.x)
-            dy = abs(next_vehicle.y - self.y)
+            dy = abs(self.y - next_vehicle.y)
             if self.direction == Direction.WEST or self.direction == Direction.EAST:
                 distance = dx
-                return distance < vertical_safety_distance
+                return distance < horizontal_safety_distance
             else:
                 distance = dy
-                return distance < horizontal_safety_distance
+                print(distance)
+                return distance < vertical_safety_distance
         return False
     
     def reach_intersection(self):
