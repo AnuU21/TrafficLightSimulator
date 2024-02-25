@@ -27,6 +27,7 @@ class Vehicle(pygame.sprite.Sprite):
         self.direction = opposite_direction_map[origin]
         self.has_crossed = False
         self.reached_intersection = False
+        
 
 
         self.image = pygame.image.load("images/up/car.png")
@@ -76,17 +77,20 @@ class Vehicle(pygame.sprite.Sprite):
         self.direction = destination
     
     def is_close_to(self, next_vehicle):
-    # Check if both vehicles are in the same lane and direction
+        # Define safety distances for horizontal and vertical lanes
+        horizontal_safety_distance = 60
+        vertical_safety_distance = 60  # Adjust this value if needed based on the game scale and vehicle velocities
+
+        # Check if both vehicles are in the same lane and direction
         if self.direction == next_vehicle.direction:
             dx = abs(next_vehicle.x - self.x)
             dy = abs(next_vehicle.y - self.y)
-            if self.direction == Direction.NORTH or self.direction == Direction.SOUTH:
-                distance = dy
-            else:
+            if self.direction == Direction.WEST or self.direction == Direction.EAST:
                 distance = dx
-            # Consider vehicles close if they are less than 10 pixels apart
-            # print(distance)
-            return distance < 60
+                return distance < vertical_safety_distance
+            else:
+                distance = dy
+                return distance < horizontal_safety_distance
         return False
     
     def reach_intersection(self):
