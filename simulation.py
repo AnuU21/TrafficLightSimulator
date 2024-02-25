@@ -3,6 +3,7 @@ import time
 import threading
 import pygame
 import sys
+import light_control
 
 # Setting default values for lights in seconds
 defaultGreen = {0:10, 1:10, 2:10, 3:10} # light 0, 1, 2, and 3 are set for green for 10 seconds
@@ -41,13 +42,6 @@ movingGap = 15   # moving gap
 
 pygame.init()
 simulation = pygame.sprite.Group() 
-
-class TrafficSignal:
-    def __init__(self, red, yellow, green):
-        self.red = red
-        self.yellow = yellow
-        self.green = green
-        self.signalText = ""
         
 class Vehicle(pygame.sprite.Sprite):
     def __init__(self, lane, vehicleClass, direction_number, direction):
