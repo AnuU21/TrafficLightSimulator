@@ -90,120 +90,58 @@ class Vehicle(pygame.sprite.Sprite):
         return False
     
     def reach_intersection(self):
-        target_x, target_y = 0, 0
-        if self.destination == Direction.SOUTH:
-            target_x = 350
-            target_y = 425
-        elif self.destination == Direction.NORTH:
-            target_x = 425
-            target_y = 350
-        elif self.destination == Direction.WEST:
-            target_y = 350
-            target_x = 425
-        elif self.destination == Direction.EAST:
-            target_y = 425
-            target_x = 350
-            
-        # Ensure has_crossed flag is correctly checked
-        self.x += (2 if self.x < target_x else -2)
-        self.y += (2 if self.y < target_y else -2)
+        target_x, target_y = self.get_intersection_target()
+        self.x, self.y = target_x, target_y
         self.has_crossed = True
-        if self.has_crossed:
-            print("Attempting to move towards intersection...")
+        print("Vehicle has reached and is crossing the intersection.")
 
-            # Adjust movement logic to ensure it's triggered correctly
-            
-            print("Vehicle is moving towards the intersection.")
-
-            # Calculate the distance to the intersection
-            dist_x = abs(self.x - target_x)
-            dist_y = abs(self.y - target_y)
-
-            for i in range(0, dist_x):
-                self.x += (2 if self.x < target_x else -2)
-                if abs(self.x - target_x) < 2:
-                    self.x = target_x
-            
-            for i in range(0, dist_y):
-                self.y += (2 if self.y < target_y else -2)
-                if abs(self.y - target_y) < 2:
-                    self.y = target_y
-        
-                
-
-            # Update reached_intersection flag based on actual position
-            self.reached_intersection = (self.x == target_x and self.y == target_y)
-            if self.reached_intersection:
-                self.has_crossed = True
-                print("Vehicle has reached and is crossing the intersection.")
+    # Get the intersection target position based on the destination
+    def get_intersection_target(self):
+        return {
+            Direction.SOUTH: (350, 425),
+            Direction.NORTH: (425, 350),
+            Direction.WEST: (425, 350),
+            Direction.EAST: (350, 425)
+        }.get(self.destination, (0, 0))
 
 
+    # Simplify and consolidate logic in act_on_traffic_light method
     def act_on_traffic_light(self, traffic_light_color: SignalColor):
-        if self.origin == Direction.SOUTH:
-            if self.destination == Direction.NORTH and traffic_light_color == SignalColor.STRAIGHT:
-                self.y -= 2
-                if not self.has_crossed:
-                    self.reach_intersection()
+        action_map = self.get_action_map()
+        action = action_map.get((self.origin, self.destination, traffic_light_color))
+        
+        if action:
+            action()  # Call the action function
+        else:
+            self.stop()
 
-                self.go_straight(self.direction)
-            elif self.destination == Direction.WEST and traffic_light_color == SignalColor.LEFT:
-                self.y -= 2
-                if not self.has_crossed:
-                    self.reach_intersection()
-                
-                self.turn(Direction.WEST)
-            elif self.destination == Direction.EAST and traffic_light_color == SignalColor.RIGHT:
-                self.y -= 2
-                if not self.has_crossed:
-                    self.reach_intersection()
-                self.turn(Direction.EAST)
-            else:
-                self.stop()
-        elif self.origin == Direction.NORTH:
-            if self.destination == Direction.SOUTH and traffic_light_color == SignalColor.STRAIGHT:
-                self.y += 2
-                if not self.has_crossed:
-                    self.reach_intersection()
-                self.go_straight(self.direction)
-            elif self.destination == Direction.WEST and traffic_light_color == SignalColor.RIGHT:
-                self.y += 2
-                if not self.has_crossed:
-                    self.reach_intersection()
-                self.turn(Direction.WEST)
-            elif self.destination == Direction.EAST and traffic_light_color == SignalColor.LEFT:
-                self.y += 2
-                if not self.has_crossed:
-                    self.reach_intersection()
-                self.turn(Direction.EAST)
-            else:
-                self.stop()
-        elif self.origin == Direction.WEST:
-            if self.destination == Direction.EAST and traffic_light_color == SignalColor.STRAIGHT:
-                self.x += 2
-                self.reach_intersection()
-                self.go_straight(self.direction)
-            elif self.destination == Direction.SOUTH and traffic_light_color == SignalColor.RIGHT:
-                self.x += 2
-                self.reach_intersection()
-                self.turn(Direction.SOUTH)
-            elif self.destination == Direction.NORTH and traffic_light_color == SignalColor.LEFT:
-                self.x += 2
-                self.reach_intersection()
-                self.turn(Direction.NORTH)
-            else:
-                self.stop()
-        elif self.origin == Direction.EAST:
-            if self.destination == Direction.WEST and traffic_light_color == SignalColor.STRAIGHT:
-                self.x -= 2
-                self.reach_intersection()
-                self.go_straight(self.direction)
-            elif self.destination == Direction.SOUTH and traffic_light_color == SignalColor.LEFT:
-                self.x -= 2
-                self.reach_intersection()
-                self.turn(Direction.SOUTH)
-            elif self.destination == Direction.NORTH and traffic_light_color == SignalColor.RIGHT:
-                self.x -= 2
-                self.reach_intersection()
-                self.turn(Direction.NORTH)
-            else:
-                self.stop()
+    def get_action_map(self):
+        return {
+            (Direction.SOUTH, Direction.NORTH, SignalColor.STRAIGHT): lambda: self.go_straight(Direction.NORTH),
+            (Direction.SOUTH, Direction.WEST, SignalColor.LEFT): lambda: self.move_and_reach(Direction.WEST),
+            (Direction.SOUTH, Direction.EAST, SignalColor.RIGHT): lambda: self.move_and_reach(Direction.EAST),
+            (Direction.EAST, Direction.WEST, SignalColor.STRAIGHT): lambda: self.go_straight(Direction.WEST),
+            (Direction.EAST, Direction.SOUTH, SignalColor.LEFT): lambda: self.move_and_reach(Direction.SOUTH),
+            (Direction.EAST, Direction.NORTH, SignalColor.RIGHT): lambda: self.move_and_reach(Direction.NORTH),
+            (Direction.NORTH, Direction.SOUTH, SignalColor.STRAIGHT): lambda: self.go_straight(Direction.SOUTH),
+            (Direction.NORTH, Direction.EAST, SignalColor.LEFT): lambda: self.move_and_reach(Direction.EAST),
+            (Direction.NORTH, Direction.WEST, SignalColor.RIGHT): lambda: self.move_and_reach(Direction.WEST),
+            (Direction.WEST, Direction.EAST, SignalColor.STRAIGHT): lambda: self.go_straight(Direction.EAST),
+            (Direction.WEST, Direction.NORTH, SignalColor.LEFT): lambda: self.move_and_reach(Direction.NORTH),
+            (Direction.WEST, Direction.SOUTH, SignalColor.RIGHT): lambda: self.move_and_reach(Direction.SOUTH),
+        }
+    
+    def move_and_reach(self, direction):
+        self.move_in_direction(direction)
+        if not self.has_crossed:
+            self.reach_intersection()
+        self.turn(direction)
+
+    def move_in_direction(self, direction):
+        move_map = {
+            Direction.NORTH: lambda: setattr(self, 'y', self.y - 2),
+            Direction.SOUTH: lambda: setattr(self, 'y', self.y + 2),
+            Direction.EAST: lambda: setattr(self, 'x', self.x + 2),
+            Direction.WEST: lambda: setattr(self, 'x', self.x - 2),
+        }
+        move_map.get(direction, lambda: None)()
