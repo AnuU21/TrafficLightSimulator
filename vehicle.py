@@ -94,7 +94,6 @@ class Vehicle(pygame.sprite.Sprite):
                 return distance < horizontal_safety_distance
             else:
                 distance = dy
-                print(distance)
                 return distance < vertical_safety_distance
         return False
     
@@ -118,7 +117,7 @@ class Vehicle(pygame.sprite.Sprite):
     def act_on_traffic_light(self, traffic_light_color: SignalColor):
         action_map = self.get_action_map()
         action = action_map.get((self.origin, self.destination, traffic_light_color))
-        
+
         if action:
             action()  # Call the action function
         else:

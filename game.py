@@ -3,6 +3,7 @@ import time
 import threading
 from light_control import *
 from vehicle import *
+from pedestrian import *
 import random
 
 controller = TrafficIntersectionController()
@@ -32,6 +33,7 @@ background_image = pygame.image.load('images/intersection.png')
 background = pygame.transform.scale(background_image, (800,800))
 
 all_vehicles = pygame.sprite.Group()
+all_pedestrians = pygame.sprite.Group()
 
 opposite_direction_map = {
         Direction.NORTH: Direction.SOUTH,
@@ -49,6 +51,53 @@ def spawn_vehicle():
     vehicle.turn(opposite_direction_map[origin])
 
     print(f"Vehicle spawned at {origin} heading to {destination}")
+
+def spawn_pedestrian():
+    origin = random.choice(list(PedestrianDirection))
+    destination = pedestrian_opposite_direction_map[origin]
+    pedestrian = Pedestrian(origin, destination)
+    all_pedestrians.add(pedestrian)
+    pedestrian.go_straight(pedestrian_opposite_direction_map[origin])
+
+    print(f"Pedestrian spawned at {origin} heading to {destination}")
+
+def pedestrian_has_reached_intersection(pedestrian: Pedestrian):
+    if pedestrian.origin == PedestrianDirection.NORTH1 or pedestrian.origin == PedestrianDirection.NORTH2:
+        return pedestrian.y == 250 or pedestrian.y == 251
+    elif pedestrian.origin == PedestrianDirection.SOUTH1 or pedestrian.origin == PedestrianDirection.SOUTH2:
+        return pedestrian.y == 480 or pedestrian.y == 481
+    elif pedestrian.origin == PedestrianDirection.WEST1 or pedestrian.origin == PedestrianDirection.WEST2:
+        return pedestrian.x == 250 or pedestrian.x == 251
+    elif pedestrian.origin == PedestrianDirection.EAST1 or pedestrian.origin == PedestrianDirection.EAST2:
+        return pedestrian.x == 480 or pedestrian.x == 481
+
+
+def move_pedestrians():
+    for pedestrian in all_pedestrians:
+        traffic_signal = None
+
+        if pedestrian.origin == PedestrianDirection.NORTH1:
+            traffic_signal = controller.pd8.get_signal()
+        elif pedestrian.origin == PedestrianDirection.SOUTH1:
+            traffic_signal = controller.pd1.get_signal()
+        elif pedestrian.origin == PedestrianDirection.NORTH2:
+            traffic_signal = controller.pd5.get_signal()
+        elif pedestrian.origin == PedestrianDirection.SOUTH2:
+            traffic_signal = controller.pd4.get_signal()
+        elif pedestrian.origin == PedestrianDirection.WEST1:
+            traffic_signal = controller.pd3.get_signal()
+        elif pedestrian.origin == PedestrianDirection.WEST2:
+            traffic_signal = controller.pd6.get_signal()
+        elif pedestrian.origin == PedestrianDirection.EAST1:
+            traffic_signal = controller.pd2.get_signal()
+        elif pedestrian.origin == PedestrianDirection.EAST2:
+            traffic_signal = controller.pd7.get_signal()
+
+        if pedestrian_has_reached_intersection(pedestrian) and not pedestrian.has_crossed:
+            pedestrian.pedestrian_act_on_traffic_light(traffic_signal)
+        else:
+            pedestrian.go_straight(pedestrian.direction)
+
 
 def remove_vehicles(all_vehicles):
     current_time = time.time()
@@ -137,9 +186,11 @@ while running:
         elif event.type == SPAWN_EVENT:
             print("Spawning vehicle")
             spawn_vehicle()
+            spawn_pedestrian()
         
     
     move_vehicles()
+    move_pedestrians()
     remove_vehicles(all_vehicles)
     
     
@@ -168,6 +219,9 @@ while running:
 
     for vehicle in all_vehicles:
         screen.blit(vehicle.image, (vehicle.x, vehicle.y))
+
+    for pedestrian in all_pedestrians:
+        screen.blit(pedestrian.image, (pedestrian.x, pedestrian.y))
 
     pygame.display.update()
 
