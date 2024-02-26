@@ -36,6 +36,8 @@ class SignalColor(Enum):
 	STRAIGHT = 3
 	RIGHT = 4
 	LEFT = 5
+	PDRED = 6
+	PDGREEN = 7
 
 class TrafficSignal(pygame.sprite.Sprite):
 	def __init__(self, signal: SignalColor):
@@ -44,6 +46,8 @@ class TrafficSignal(pygame.sprite.Sprite):
 		self.ts_left = pygame.transform.scale_by(pygame.image.load('images/signals/green-left.png'), 0.075)
 		self.ts_yellow = pygame.transform.scale_by(pygame.image.load('images/signals/yellow.png'), 0.075)
 		self.ts_red = pygame.transform.scale_by(pygame.image.load('images/signals/red.png'), 0.075)
+		self.pd_red = pygame.transform.scale_by(pygame.image.load('images/signals/pedestrian-red.png'), 0.075)
+		self.pd_green = pygame.transform.scale_by(pygame.image.load('images/signals/pedestrian-green.png'), 0.075)
 
 		pygame.sprite.Sprite.__init__(self)
 		self.currentSignal = signal
@@ -65,6 +69,10 @@ class TrafficSignal(pygame.sprite.Sprite):
 			self.image = self.ts_yellow
 		elif (self.currentSignal == SignalColor.RED):
 			self.image = self.ts_red
+		elif(self.currentSignal == SignalColor.PDRED):
+			self.image = self.pd_red
+		elif(self.currentSignal == SignalColor.PDGREEN):
+			self.image = self.pd_green
 
 	def get_signal(self):
 		return self.currentSignal
@@ -74,6 +82,14 @@ class TrafficIntersectionController:
 	ts2 = TrafficSignal(SignalColor.RED) # right
 	ts3 = TrafficSignal(SignalColor.RED) # bottom
 	ts4 = TrafficSignal(SignalColor.RED) # left
+	pd1 = TrafficSignal(SignalColor.RED)
+	pd2 = TrafficSignal(SignalColor.RED)
+	pd3 = TrafficSignal(SignalColor.RED)
+	pd4 = TrafficSignal(SignalColor.RED)
+	pd5 = TrafficSignal(SignalColor.RED)
+	pd6 = TrafficSignal(SignalColor.RED)
+	pd7 = TrafficSignal(SignalColor.RED)
+	pd8 = TrafficSignal(SignalColor.RED)
 
 	def __init__(self):
 		self.state = 1  # Initialize with state 1
@@ -94,6 +110,14 @@ class TrafficIntersectionController:
 				self.ts4.switch_signal(SignalColor.RED)
 				self.ts1.switch_signal(SignalColor.STRAIGHT)
 				self.ts3.switch_signal(SignalColor.STRAIGHT)
+				self.pd1.switch_signal(SignalColor.PDGREEN)
+				self.pd8.switch_signal(SignalColor.PDGREEN)
+				self.pd4.switch_signal(SignalColor.PDGREEN)
+				self.pd5.switch_signal(SignalColor.PDGREEN)
+				self.pd2.switch_signal(SignalColor.PDRED)
+				self.pd3.switch_signal(SignalColor.PDRED)
+				self.pd6.switch_signal(SignalColor.PDRED)
+				self.pd7.switch_signal(SignalColor.PDRED)
 			case 2:
 				self.ts1.switch_signal(SignalColor.YELLOW)
 				self.ts3.switch_signal(SignalColor.YELLOW)
@@ -102,17 +126,40 @@ class TrafficIntersectionController:
 				self.ts3.switch_signal(SignalColor.RED)
 				self.ts2.switch_signal(SignalColor.STRAIGHT)
 				self.ts4.switch_signal(SignalColor.STRAIGHT)
+				self.pd1.switch_signal(SignalColor.PDRED)
+				self.pd8.switch_signal(SignalColor.PDRED)
+				self.pd4.switch_signal(SignalColor.PDRED)
+				self.pd5.switch_signal(SignalColor.PDRED)
+				self.pd2.switch_signal(SignalColor.PDGREEN)
+				self.pd3.switch_signal(SignalColor.PDGREEN)
+				self.pd6.switch_signal(SignalColor.PDGREEN)
+				self.pd7.switch_signal(SignalColor.PDGREEN)
 			case 3:
 				self.ts1.switch_signal(SignalColor.RIGHT)
 				self.ts2.switch_signal(SignalColor.LEFT)
 				self.ts3.switch_signal(SignalColor.RIGHT)
 				self.ts4.switch_signal(SignalColor.LEFT)
+				self.pd1.switch_signal(SignalColor.PDRED)
+				self.pd8.switch_signal(SignalColor.PDRED)
+				self.pd4.switch_signal(SignalColor.PDRED)
+				self.pd5.switch_signal(SignalColor.PDRED)
+				self.pd2.switch_signal(SignalColor.PDRED)
+				self.pd3.switch_signal(SignalColor.PDRED)
+				self.pd6.switch_signal(SignalColor.PDRED)
+				self.pd7.switch_signal(SignalColor.PDRED)
 			case 4:
 				self.ts1.switch_signal(SignalColor.LEFT)
 				self.ts2.switch_signal(SignalColor.RIGHT)
 				self.ts3.switch_signal(SignalColor.LEFT)
 				self.ts4.switch_signal(SignalColor.RIGHT)
-
+				self.pd1.switch_signal(SignalColor.PDRED)
+				self.pd8.switch_signal(SignalColor.PDRED)
+				self.pd4.switch_signal(SignalColor.PDRED)
+				self.pd5.switch_signal(SignalColor.PDRED)
+				self.pd2.switch_signal(SignalColor.PDRED)
+				self.pd3.switch_signal(SignalColor.PDRED)
+				self.pd6.switch_signal(SignalColor.PDRED)
+				self.pd7.switch_signal(SignalColor.PDRED)
 """
 EXAMPLE USAGE:
 
