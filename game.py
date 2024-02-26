@@ -143,13 +143,28 @@ while running:
     remove_vehicles(all_vehicles)
     
     
-    
+    pd1_resize = pygame.transform.scale(controller.pd1.image, (80, 80))
+    pd2_resize = pygame.transform.scale(controller.pd2.image, (80, 80))
+    pd3_resize = pygame.transform.scale(controller.pd3.image, (80, 80))
+    pd4_resize = pygame.transform.scale(controller.pd4.image, (80, 80))
+    pd5_resize = pygame.transform.scale(controller.pd5.image, (80, 80))
+    pd6_resize = pygame.transform.scale(controller.pd6.image, (80, 80))
+    pd7_resize = pygame.transform.scale(controller.pd7.image, (80, 80))
+    pd8_resize = pygame.transform.scale(controller.pd8.image, (80, 80))
 
     screen.blit(background,(0,0))
     screen.blit(pygame.transform.rotate(controller.ts1.image, 180), (335, 50))
     screen.blit(pygame.transform.rotate(controller.ts2.image, 90), (650, 335))
     screen.blit(controller.ts3.image, (410, 650))
     screen.blit(pygame.transform.rotate(controller.ts4.image, 270), (50, 400))
+    screen.blit(pd1_resize, (180, 250))
+    screen.blit(pygame.transform.rotate(pd2_resize, 90), (250, 200))
+    screen.blit(pygame.transform.rotate(pd3_resize, 270), (480, 200))
+    screen.blit(pd4_resize, (550, 250))
+    screen.blit(pygame.transform.rotate(pd5_resize, 180), (550, 480))
+    screen.blit(pygame.transform.rotate(pd6_resize, 270), (480, 530))
+    screen.blit(pygame.transform.rotate(pd7_resize, 90), (250, 530))
+    screen.blit(pygame.transform.rotate(pd8_resize, 180), (180, 480))
 
     for vehicle in all_vehicles:
         screen.blit(vehicle.image, (vehicle.x, vehicle.y))
