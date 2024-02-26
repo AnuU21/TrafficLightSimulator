@@ -4,14 +4,14 @@ from light_control import SignalColor
 import time
 
 class PedestrianDirection(Enum):
-    SOUTH1 = {"x": 250, "y": 750}
-    SOUTH2 = {"x": 480, "y": 750}
+    SOUTH1 = {"x": 260, "y": 750}
+    SOUTH2 = {"x": 510, "y": 750}
     EAST1 = {"x": 750, "y": 250}
-    EAST2 = {"x": 750, "y": 480}
-    NORTH1 = {"x": 250, "y": 0}
-    NORTH2 = {"x": 480, "y": 0}
+    EAST2 = {"x": 750, "y": 510}
+    NORTH1 = {"x": 260, "y": 0}
+    NORTH2 = {"x": 510, "y": 0}
     WEST1 = {"x": 0, "y": 250}
-    WEST2 = {"x": 0, "y": 480}
+    WEST2 = {"x": 0, "y": 510}
 
 pedestrian_opposite_direction_map = {
         PedestrianDirection.NORTH1: PedestrianDirection.SOUTH1,
@@ -51,21 +51,21 @@ class Pedestrian(pygame.sprite.Sprite):
     
     def go_straight(self, direction: PedestrianDirection):
         if direction == PedestrianDirection.NORTH1:
-            self.y -= 1
+            self.y -= 2
         elif direction == PedestrianDirection.SOUTH1:
-            self.y += 1
+            self.y += 2
         elif direction == PedestrianDirection.EAST1:
-            self.x += 1
+            self.x += 2
         elif direction == PedestrianDirection.WEST1:
-            self.x -= 1
+            self.x -= 2
         elif direction == PedestrianDirection.NORTH2:
-            self.y -= 1
+            self.y -= 2
         elif direction == PedestrianDirection.SOUTH2:
-            self.y += 1
+            self.y += 2
         elif direction == PedestrianDirection.EAST2:
-            self.x += 1
+            self.x += 2
         elif direction == PedestrianDirection.WEST2:
-            self.x -= 1
+            self.x -= 2
         
     
     def pedestrian_reach_intersection(self):
@@ -92,7 +92,6 @@ class Pedestrian(pygame.sprite.Sprite):
     # Simplify and consolidate logic in act_on_traffic_light method
     def pedestrian_act_on_traffic_light(self, traffic_light_color: SignalColor):
         action_map = self.get_action_map()
-        print(self.origin, self.destination, traffic_light_color)
         action = action_map.get((self.origin, self.destination, traffic_light_color))
 
         if action:
