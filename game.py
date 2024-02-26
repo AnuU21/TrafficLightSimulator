@@ -3,6 +3,11 @@ import time
 import threading
 from light_control import *
 from vehicle import *
+from vehicle import Direction as vehicleDirection
+from vehicle import opposite_direction_map as vehicle_opposite_direction_map
+from pedestrian import *
+from pedestrian import Direction as pedestrianDirection
+from pedestrian import opposite_direction_map as pedestrian_opposite_direction_map
 import random
 
 controller = TrafficIntersectionController()
@@ -32,43 +37,62 @@ background_image = pygame.image.load('images/intersection.png')
 background = pygame.transform.scale(background_image, (800,800))
 
 all_vehicles = pygame.sprite.Group()
-
-opposite_direction_map = {
-        Direction.NORTH: Direction.SOUTH,
-        Direction.SOUTH: Direction.NORTH,
-        Direction.EAST: Direction.WEST,
-        Direction.WEST: Direction.EAST
-    }
+all_pedestrians = pygame.sprite.Group()
 
 def spawn_vehicle():
     # Simplified origin and destination selection to prevent same-origin-destination issue
-    origin = random.choice(list(Direction))
-    destination = random.choice([d for d in Direction if d != origin])
+    origin = random.choice(list(vehicleDirection))
+    destination = random.choice([d for d in vehicleDirection if d != origin])
     vehicle = Vehicle(origin, destination)
     all_vehicles.add(vehicle)
-    vehicle.turn(opposite_direction_map[origin])
+    vehicle.turn(vehicle_opposite_direction_map[origin])
 
     print(f"Vehicle spawned at {origin} heading to {destination}")
 
-def remove_vehicles(all_vehicles):
+def spawn_pedestrian():
+    origin = random.choice(list(pedestrianDirection))
+    destination = random.choice([d for d in pedestrianDirection if d != origin])
+    pedestrian = Pedestrian(origin, destination)
+    all_pedestrians.add(pedestrian)
+    pedestrian.go_straight(pedestrian_opposite_direction_map[origin])
+
+    print(f"Pedestrian spawned at {origin} heading to {destination}")
+
+def remove_vehicles():
     current_time = time.time()
     for vehicle in list(all_vehicles):  # Use list to avoid modifying the group while iterating
         if current_time - vehicle.timestamp > 20:
             all_vehicles.remove(vehicle)
             print(f"Vehicle removed after 20 seconds.")
 
+    for pedestrian in list(all_pedestrians):  # Use list to avoid modifying the group while iterating
+        if current_time - pedestrian.timestamp > 20:
+            all_pedestrians.remove(pedestrian)
+            print(f"Pedestrian removed after 20 seconds.")
+    
+
 
 def has_reached_intersection(vehicle: Vehicle):
-    if vehicle.origin == Direction.NORTH:
+    if vehicle.origin == vehicleDirection.NORTH:
         return vehicle.y == 200 or vehicle.y == 201
-    elif vehicle.origin == Direction.SOUTH:
+    elif vehicle.origin == vehicleDirection.SOUTH:
         return vehicle.y == 575 or vehicle.y == 576
-    elif vehicle.origin == Direction.EAST:
+    elif vehicle.origin == vehicleDirection.EAST:
         return vehicle.x == 575 or vehicle.x == 576
-    elif vehicle.origin == Direction.WEST:
+    elif vehicle.origin == vehicleDirection.WEST:
         return vehicle.x == 200 or vehicle.x == 201
-
     
+def has_reached_intersection(pedestrian: Pedestrian):
+    if pedestrian.origin == pedestrianDirection.NORTH1 or pedestrian.origin == pedestrianDirection.NORTH2:
+        return pedestrian.y == 200 or pedestrian.y == 201
+    elif pedestrian.origin == pedestrianDirection.SOUTH1 or pedestrian.origin == pedestrianDirection.SOUTH2:
+        return pedestrian.y == 575 or pedestrian.y == 576
+    elif pedestrian.origin == pedestrianDirection.WEST1 or pedestrian.origin == pedestrianDirection.WEST2:
+        return pedestrian.x == 200 or pedestrian.x == 201
+    elif pedestrian.origin == pedestrianDirection.EAST1 or pedestrian.origin == pedestrianDirection.EAST2:
+        return pedestrian.x == 575 or pedestrian.x == 576
+
+
 def find_next_vehicle_in_path(vehicle, all_vehicles):
     safety_distance = 60  # Define a safety distance (in pixels)
     for other_vehicle in all_vehicles:
@@ -77,13 +101,13 @@ def find_next_vehicle_in_path(vehicle, all_vehicles):
 
         # Check if the other vehicle is in the same direction of movement
         if vehicle.direction == other_vehicle.direction:
-            if (vehicle.direction == Direction.NORTH) and (vehicle.y > other_vehicle.y) and ((vehicle.y - other_vehicle.y) < safety_distance):
+            if (vehicle.direction == vehicleDirection.NORTH) and (vehicle.y > other_vehicle.y) and ((vehicle.y - other_vehicle.y) < safety_distance):
                 return other_vehicle
-            elif (vehicle.direction == Direction.SOUTH) and (vehicle.y < other_vehicle.y) and ((other_vehicle.y - vehicle.y) < safety_distance):
+            elif (vehicle.direction == vehicleDirection.SOUTH) and (vehicle.y < other_vehicle.y) and ((other_vehicle.y - vehicle.y) < safety_distance):
                 return other_vehicle
-            elif (vehicle.direction == Direction.EAST) and (vehicle.x < other_vehicle.x) and ((other_vehicle.x - vehicle.x) < safety_distance):
+            elif (vehicle.direction == vehicleDirection.EAST) and (vehicle.x < other_vehicle.x) and ((other_vehicle.x - vehicle.x) < safety_distance):
                 return other_vehicle
-            elif (vehicle.direction == Direction.WEST) and (vehicle.x > other_vehicle.x) and ((vehicle.x - other_vehicle.x) < safety_distance):
+            elif (vehicle.direction == vehicleDirection.WEST) and (vehicle.x > other_vehicle.x) and ((vehicle.x - other_vehicle.x) < safety_distance):
                 return other_vehicle
     return None  # If no vehicle is found in the path, return None
 
@@ -96,13 +120,13 @@ def move_vehicles():
 
         # Implement logic to check for red light and stop vehicles accordingly
         traffic_signal = None
-        if vehicle.origin == Direction.NORTH:
+        if vehicle.origin == vehicleDirection.NORTH:
             traffic_signal = controller.ts1.get_signal()
-        elif vehicle.origin == Direction.SOUTH:
+        elif vehicle.origin == vehicleDirection.SOUTH:
             traffic_signal = controller.ts3.get_signal()
-        elif vehicle.origin == Direction.EAST:
+        elif vehicle.origin == vehicleDirection.EAST:
             traffic_signal = controller.ts2.get_signal()
-        elif vehicle.origin == Direction.WEST:
+        elif vehicle.origin == vehicleDirection.WEST:
             traffic_signal = controller.ts4.get_signal()
 
         # Check if vehicle has reached the intersection and act on traffic signal
@@ -118,6 +142,32 @@ def move_vehicles():
                 vehicle.stop()
             else:
                 vehicle.go_straight(vehicle.direction)
+
+def move_pedestrians():
+    for pedestrian in all_pedestrians:
+        traffic_signal = None
+
+        if pedestrian.origin == pedestrianDirection.NORTH1:
+            traffic_signal = controller.pd8.get_signal()
+        elif pedestrian.origin == pedestrianDirection.SOUTH1:
+            traffic_signal = controller.pd1.get_signal()
+        elif pedestrian.origin == pedestrianDirection.NORTH2:
+            traffic_signal = controller.pd5.get_signal()
+        elif pedestrian.origin == pedestrianDirection.SOUTH1:
+            traffic_signal = controller.pd4.get_signal()
+        elif pedestrian.origin == pedestrianDirection.WEST1:
+            traffic_signal = controller.pd3.get_signal()
+        elif pedestrian.origin == pedestrianDirection.WEST2:
+            traffic_signal = controller.pd6.get_signal()
+        elif pedestrian.origin == pedestrianDirection.EAST1:
+            traffic_signal = controller.pd2.get_signal()
+        elif pedestrian.origin == pedestrianDirection.EAST2:
+            traffic_signal = controller.pd7.get_signal()
+
+        if has_reached_intersection(pedestrian) and not pedestrian.has_crossed:
+            pedestrian.act_on_traffic_light(traffic_signal)
+        else:
+            pedestrian.go_straight(pedestrian.direction)
 
 
 SPAWN_INTERVAL = 4
@@ -137,10 +187,12 @@ while running:
         elif event.type == SPAWN_EVENT:
             print("Spawning vehicle")
             spawn_vehicle()
+            spawn_pedestrian()
         
     
     move_vehicles()
-    remove_vehicles(all_vehicles)
+    move_pedestrians()
+    remove_vehicles()
     
     
     pd3_resize = pygame.transform.scale(controller.pd3.image, (80, 80))
@@ -168,6 +220,9 @@ while running:
 
     for vehicle in all_vehicles:
         screen.blit(vehicle.image, (vehicle.x, vehicle.y))
+
+    for pedestrian in all_pedestrians:
+        screen.blit(pedestrian.image, (pedestrian.x, pedestrian.y))
 
     pygame.display.update()
 

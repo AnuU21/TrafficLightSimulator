@@ -28,10 +28,7 @@ class Vehicle(pygame.sprite.Sprite):
         self.has_crossed = False
         self.reached_intersection = False
         
-
-
         self.image = pygame.image.load("images/car.png")
-
         
         self.rect = self.image.get_rect()
         self.original_image = self.image

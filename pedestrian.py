@@ -36,14 +36,10 @@ class Pedestrian(pygame.sprite.Sprite):
         self.has_crossed = False
         self.reached_intersection = False
         
-
-
-        self.image = pygame.image.load("images/up/car.png")
-
+        self.image = pygame.image.load("images/pedestrian.png")
         
         self.rect = self.image.get_rect()
         self.original_image = self.image
-        
         
         self.x = origin.value["x"]
         self.y = origin.value["y"]
