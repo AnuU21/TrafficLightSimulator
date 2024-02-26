@@ -46,8 +46,8 @@ class TrafficSignal(pygame.sprite.Sprite):
 		self.ts_left = pygame.transform.scale_by(pygame.image.load('images/signals/green-left.png'), 0.075)
 		self.ts_yellow = pygame.transform.scale_by(pygame.image.load('images/signals/yellow.png'), 0.075)
 		self.ts_red = pygame.transform.scale_by(pygame.image.load('images/signals/red.png'), 0.075)
-		self.pd_red = pygame.transform.scale_by(pygame.image.load('images/signals/pedestrian-red.png'), 0.075)
-		self.pd_green = pygame.transform.scale_by(pygame.image.load('images/signals/pedestrian-green.png'), 0.075)
+		self.pd_red = pygame.transform.scale_by(pygame.image.load('images/signals/pedestrian-red.png'), 0.03)
+		self.pd_green = pygame.transform.scale_by(pygame.image.load('images/signals/pedestrian-green.png'), 0.03)
 
 		pygame.sprite.Sprite.__init__(self)
 		self.currentSignal = signal
@@ -82,14 +82,14 @@ class TrafficIntersectionController:
 	ts2 = TrafficSignal(SignalColor.RED) # right
 	ts3 = TrafficSignal(SignalColor.RED) # bottom
 	ts4 = TrafficSignal(SignalColor.RED) # left
-	pd1 = TrafficSignal(SignalColor.RED)
-	pd2 = TrafficSignal(SignalColor.RED)
-	pd3 = TrafficSignal(SignalColor.RED)
-	pd4 = TrafficSignal(SignalColor.RED)
-	pd5 = TrafficSignal(SignalColor.RED)
-	pd6 = TrafficSignal(SignalColor.RED)
-	pd7 = TrafficSignal(SignalColor.RED)
-	pd8 = TrafficSignal(SignalColor.RED)
+	pd1 = TrafficSignal(SignalColor.PDRED)
+	pd2 = TrafficSignal(SignalColor.PDRED)
+	pd3 = TrafficSignal(SignalColor.PDRED)
+	pd4 = TrafficSignal(SignalColor.PDRED)
+	pd5 = TrafficSignal(SignalColor.PDRED)
+	pd6 = TrafficSignal(SignalColor.PDRED)
+	pd7 = TrafficSignal(SignalColor.PDRED)
+	pd8 = TrafficSignal(SignalColor.PDRED)
 
 	def __init__(self):
 		self.state = 1  # Initialize with state 1
