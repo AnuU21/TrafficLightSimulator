@@ -1,3 +1,5 @@
+Car image from https://github.com/mihir-m-gandhi/Adaptive-Traffic-Signal-Timer
+
 Please run:
 ```
 python3 -m venv .venv
