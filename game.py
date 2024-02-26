@@ -207,14 +207,14 @@ while running:
     screen.blit(controller.ts3.image, (410, 650))
     screen.blit(pygame.transform.rotate(controller.ts4.image, 270), (50, 400))
     
-    screen.blit(controller.pd1.image, (180, 250))
-    screen.blit(pygame.transform.rotate(controller.pd2.image, 90), (250, 200))
-    screen.blit(pygame.transform.rotate(controller.pd3.image, 270), (480, 200))
+    screen.blit(controller.pd1.image, (210, 250))
+    screen.blit(pygame.transform.rotate(controller.pd2.image, 90), (250, 210))
+    screen.blit(pygame.transform.rotate(controller.pd3.image, 270), (480, 210))
     screen.blit(controller.pd4.image, (550, 250))
     screen.blit(pygame.transform.rotate(controller.pd5.image, 180), (550, 480))
-    screen.blit(pygame.transform.rotate(controller.pd6.image, 270), (480, 530))
-    screen.blit(pygame.transform.rotate(controller.pd7.image, 90), (250, 530))
-    screen.blit(pygame.transform.rotate(controller.pd8.image, 180), (180, 480))
+    screen.blit(pygame.transform.rotate(controller.pd6.image, 270), (480, 550))
+    screen.blit(pygame.transform.rotate(controller.pd7.image, 90), (250, 550))
+    screen.blit(pygame.transform.rotate(controller.pd8.image, 180), (210, 480))
 
 
     for vehicle in all_vehicles:
@@ -227,4 +227,3 @@ while running:
 
 # Done! Time to quit.
 pygame.quit()
-
